@@ -45,18 +45,11 @@ def _main( fileName ) :
     for node_id in allNodeIds:
         node = Node.findNode(node_id)
         node.initializeDistanceTable()
+        node.initializeRoutingTable()  ## new
 
-    # Debug
-    # for node_id, neighbors in topology.items():
-    #     print(f"I am node {node_id}")
-    #     print(f"My neighbors are: {neighbors}")
-
-
-    # # # DEBUG: Show all nodes
-    # Node.showAllNodes()
-
+    print("\nWelcome, this program will simulate the Distance-Vector Routing Protocol.\nPlease select your desired run mode.\n")
     print("( 1 ) Auto-mode")
-    print("( 2 ) For step-mode")
+    print("( 2 ) Step-mode")
 
     while True:
         modeSelect = input("Enter number to select mode.\n")
@@ -71,62 +64,94 @@ def _main( fileName ) :
             print("Error: Please enter a valid number. \nEnter '1' for auto-mode, or '2' for step-by-step mode.")
 
 
-    # endLoop = False
-    # iteration = 0
-    #
-    # while (not endLoop):
-    #     iteration +=1
-    #     print("===================================")
-    #     print(f"Iteration {iteration}")
-    #     print("===================================")
-    #
-    #     # show distances from each node
-    #     for node_id in allNodeIds:
-    #         node = Node.findNode(node_id)
-    #         node.displayDistanceTable()
-    #
-    #     userInput = input("\nType \'quit\' to exit or press return key to keep iterating:   ")
-    #
-    #     if userInput == 'quit':
-    #         break
-    #     else:
-    #         curr_node = str(iteration % len(allNodeIds) )
-    #         if( curr_node == '0'):
-    #             curr_node = str( len(allNodeIds) )
-    #
-    #         print (f"\nCurrent node being updated is Node - {curr_node}\n")
-    #         node = Node.findNode( curr_node )
-    #         node.updateDistanceTable()
 
 
 def autoMode():
-    print("Auto Mode")
+    print("\nPerforming simulation in Auto Mode")
+
+    loopCount = 1
+    curr_state = 'default'
+    last_state = 'default'
+
+    while True:
+        # curr_node = str( loopCount % len(allNodeIds) )
+        # if( curr_node == '0'):
+        #     curr_node = str( len(allNodeIds) )
+        curr_node = '1'
+        node = Node.findNode( curr_node )
+        node.updateDistanceTable()
+
+        curr_state = ''
+        # show distances from each node
+        for node_id in allNodeIds:
+            node = Node.findNode(node_id)
+            curr_state += node.displayTables()
+            curr_state += '\n'
+
+        if curr_state != last_state:
+            last_state = curr_state
+            loopCount +=1
+        else:
+            break
+
+    print("===================================")
+    print(f"Stable State Reached after {loopCount} iterations.")
+    print("===================================")
+
+    stable_state = ''
+    for node_id in allNodeIds:
+        node = Node.findNode(node_id)
+        stable_state += node.displayTables()
+        stable_state += '\n'
+    print(stable_state)
+
+
 
 def stepMode():
     endLoop = False
     iteration = 0
 
+    curr_state = 'default'
+    last_state = 'default'
+
     while (not endLoop):
-        iteration +=1
         print("===================================")
-        print(f"Iteration {iteration}")
+        if iteration == 0:
+            print("Initial State")
+        else:
+            print(f"Iteration {iteration}")
         print("===================================")
 
+        curr_state = ''
         # show distances from each node
         for node_id in allNodeIds:
             node = Node.findNode(node_id)
-            node.displayDistanceTable()
+            curr_state += node.displayTables()
+            curr_state += '\n'
 
-        userInput = input("\nType \'quit\' to exit or press return key to keep iterating:   ")
+        if curr_state != last_state:
+            print( curr_state )
+            last_state = curr_state
+            userInput = input("\nType \'quit\' to exit or press return key to keep iterating:\n")
+        else:
+            print("===================================")
+            print("Stable State has been reached!")
+            print("===================================")
+
+            userInput = input("\nType \'quit\' to exit or type 'break [node]' to simulate broken router:\n")
+
+
 
         if userInput == 'quit':
             break
         else:
-            curr_node = str(iteration % len(allNodeIds) )
-            if( curr_node == '0'):
-                curr_node = str( len(allNodeIds) )
+            iteration +=1
+            # curr_node = str(iteration % len(allNodeIds) )
+            # if( curr_node == '0'):
+            #     curr_node = str( len(allNodeIds) )
+            curr_node = '1'
 
-            print (f"\nCurrent node being updated is Node - {curr_node}\n")
+            # print (f"\nCurrent node being updated is Node - {curr_node}\n")
             node = Node.findNode( curr_node )
             node.updateDistanceTable()
 
