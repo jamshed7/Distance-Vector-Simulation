@@ -1,6 +1,5 @@
-# Name: Jamshed Jahangir
-# UTA ID: 1001366821
-# NetID: jxj6821
+# Author: Jamshed Jahangir
+# Last updated: April 26, 2020
 
 class Node():
     # dictionary that contains all the nodes
